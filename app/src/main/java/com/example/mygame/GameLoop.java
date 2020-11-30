@@ -10,7 +10,7 @@ public class GameLoop extends Thread {
     private Game game;
     private double averageUPS;
     private double averageFPS;
-    private static final double MAX_UPS = 60.0;
+    public static final double MAX_UPS = 60.0;
     private static final double UPS_PERIOD = 1E-3/MAX_UPS;
 
     public GameLoop(Game game, SurfaceHolder surfaceHolder) {
@@ -76,9 +76,8 @@ public class GameLoop extends Thread {
             }
 
 
-
-
-
+//CORRECT GAME LOOP IMPLEMENTATION, CAUSES LAG
+/*
             elapsedTime = System.currentTimeMillis() - startTime;
             sleepTime = (long)(updateCount* UPS_PERIOD - elapsedTime);
             if(sleepTime > 0){
@@ -96,7 +95,7 @@ public class GameLoop extends Thread {
                 elapsedTime = System.currentTimeMillis() - startTime;
                 sleepTime = (long)(updateCount* UPS_PERIOD - elapsedTime);
             }
-
+*/
 
             elapsedTime = System.currentTimeMillis() - startTime;
             if(elapsedTime >= 1000){
