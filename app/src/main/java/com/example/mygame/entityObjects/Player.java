@@ -1,15 +1,17 @@
-package com.example.mygame;
+package com.example.mygame.entityObjects;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 
 import androidx.core.content.ContextCompat;
+
+import com.example.mygame.GameLoop;
+import com.example.mygame.Joystick;
+import com.example.mygame.R;
 
 public class Player extends EntityCircle {
 
 
-    private static final double SPEED_PPS = 400.0;
+    public static final double SPEED_PPS = 400.0;
     private static final double MAX_SPEED = SPEED_PPS / GameLoop.MAX_UPS;
     private final Joystick joystick;
 
@@ -30,9 +32,7 @@ public class Player extends EntityCircle {
         positionY += velocityY;
     }
 
-    public void setPosition(double x, double y) {
 
-        this.positionY = y;
-        this.positionX = x;
-    }
+
+
 }

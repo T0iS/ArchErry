@@ -1,10 +1,7 @@
-package com.example.mygame;
+package com.example.mygame.entityObjects;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-
-import androidx.core.content.ContextCompat;
 
 public abstract class EntityCircle extends GameObject {
 

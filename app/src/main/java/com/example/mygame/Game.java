@@ -6,18 +6,23 @@ import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
+import com.example.mygame.entityObjects.Enemy;
+import com.example.mygame.entityObjects.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
     private final Player player;
     private final Joystick joystick;
     private GameLoop gameLoop;
-    private final Enemy enemy;
-
+    //private final Enemy enemy;
+    private List<Enemy> enemies = new ArrayList<>();
 
     public Game(Context context) {
         super(context);
@@ -28,9 +33,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         gameLoop = new GameLoop(this, surfaceHolder);
 
         joystick = new Joystick(275, 1000, 70, 40);
-        player = new Player(getContext(), 1000, 500, 30);
+        player = new Player(getContext(), joystick, 1000, 500, 30);
 
-        enemy = new Enemy();
+        //enemy = new Enemy(getContext(), player, 500, 500, 30);
 
         setFocusable(true);
     }
@@ -83,6 +88,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         joystick.draw(canvas);
         player.draw(canvas);
+        //enemy.draw(canvas);
+        for(Enemy e : enemies) {
+            e.draw(canvas);
+        }
     }
 
     public void drawUPS(Canvas canvas) {
@@ -108,8 +117,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void update() {
 
         joystick.update();
-        player.update(joystick);
+        player.update();
+        //enemy.update();
 
+        if(Enemy.readyToBeSpawned()){
+            enemies.add(new Enemy(getContext(), player));
+        }
+
+        for(Enemy e : enemies){
+            e.update();
+        }
 
     }
 }
