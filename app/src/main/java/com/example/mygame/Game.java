@@ -16,6 +16,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private final Player player;
     private final Joystick joystick;
     private GameLoop gameLoop;
+    private final Enemy enemy;
 
 
     public Game(Context context) {
@@ -28,6 +29,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         joystick = new Joystick(275, 1000, 70, 40);
         player = new Player(getContext(), 1000, 500, 30);
+
+        enemy = new Enemy();
 
         setFocusable(true);
     }
