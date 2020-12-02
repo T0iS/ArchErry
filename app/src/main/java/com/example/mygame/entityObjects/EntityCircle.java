@@ -25,7 +25,18 @@ public abstract class EntityCircle extends GameObject {
 
     }
 
+    public static boolean collides(EntityCircle c, EntityCircle c1){
 
+        double distance = distanceBetween(c, c1);
+        double requiredDistanceToCollide = c.getRadius() + c1.getRadius();
 
+        if(distance < requiredDistanceToCollide){
+            return true;
+        }
+        else return false;
+    }
 
+    public double getRadius() {
+        return radius;
+    }
 }

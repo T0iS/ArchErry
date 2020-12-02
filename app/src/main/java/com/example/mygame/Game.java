@@ -11,9 +11,11 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.example.mygame.entityObjects.Enemy;
+import com.example.mygame.entityObjects.EntityCircle;
 import com.example.mygame.entityObjects.Player;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
@@ -126,6 +128,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         for(Enemy e : enemies){
             e.update();
+        }
+
+        Iterator<Enemy> enemyIterator = enemies.iterator();
+        while(enemyIterator.hasNext()){
+            if(EntityCircle.collides(enemyIterator.next(), player)){
+                enemyIterator.remove();
+            }
         }
 
     }

@@ -41,4 +41,6 @@ public abstract class GameObject {
     protected double getPositionY() {
         return positionY;
     }
+
+
 }
