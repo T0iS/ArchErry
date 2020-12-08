@@ -1,6 +1,7 @@
 package com.example.mygame;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.view.MotionEvent;
@@ -25,6 +26,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private GameLoop gameLoop;
     //private final Enemy enemy;
     private List<Enemy> enemies = new ArrayList<>();
+    private StatusText statusText;
 
     public Game(Context context) {
         super(context);
@@ -39,6 +41,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         //enemy = new Enemy(getContext(), player, 500, 500, 30);
 
+        statusText = new StatusText("DEAD", ContextCompat.getColor(context, R.color.red), 1100, 200);
         setFocusable(true);
     }
 
@@ -86,13 +89,17 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void draw(Canvas canvas) {
         super.draw(canvas);
         drawFPS(canvas);
-        drawUPS(canvas);
+        //drawUPS(canvas);
 
         joystick.draw(canvas);
         player.draw(canvas);
         //enemy.draw(canvas);
         for(Enemy e : enemies) {
             e.draw(canvas);
+        }
+
+        if(player.health <= 0){
+            statusText.draw(canvas);
         }
     }
 
@@ -103,7 +110,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         int color = ContextCompat.getColor(getContext(), R.color.white);
         paint.setColor(color);
         paint.setTextSize(50);
-        canvas.drawText("UPS" + averageUPS, 100, 60, paint);
+        canvas.drawText("UPS" + averageUPS, 100, 160, paint);
     }
 
     public void drawFPS(Canvas canvas) {
@@ -113,29 +120,37 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         int color = ContextCompat.getColor(getContext(), R.color.red);
         paint.setColor(color);
         paint.setTextSize(50);
-        canvas.drawText("FPS" + averageFPS, 100, 160, paint);
+        canvas.drawText("FPS" + averageFPS, 100, 60, paint);
     }
 
     public void update() {
 
-        joystick.update();
-        player.update();
-        //enemy.update();
+        if(player.health > 0) {
 
-        if(Enemy.readyToBeSpawned()){
-            enemies.add(new Enemy(getContext(), player));
-        }
+            joystick.update();
+            player.update();
 
-        for(Enemy e : enemies){
-            e.update();
-        }
+            //enemy.update();
 
-        Iterator<Enemy> enemyIterator = enemies.iterator();
-        while(enemyIterator.hasNext()){
-            if(EntityCircle.collides(enemyIterator.next(), player)){
-                enemyIterator.remove();
+            if (Enemy.readyToBeSpawned()) {
+                enemies.add(new Enemy(getContext(), player));
+            }
+
+            for (Enemy e : enemies) {
+                e.update();
+            }
+
+            Iterator<Enemy> enemyIterator = enemies.iterator();
+            while (enemyIterator.hasNext()) {
+                if (EntityCircle.collides(enemyIterator.next(), player)) {
+                    enemyIterator.remove();
+                    player.health--;
+                }
             }
         }
-
     }
+
+
+
+
 }

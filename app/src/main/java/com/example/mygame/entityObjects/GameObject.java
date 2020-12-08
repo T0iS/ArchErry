@@ -43,4 +43,10 @@ public abstract class GameObject {
     }
 
 
+    protected void setPositionX(int positionX){
+        this.positionX = positionX;
+    }
+    protected void setPositionY(int positionY){
+        this.positionY = positionY;
+    }
 }

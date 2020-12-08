@@ -10,4 +10,6 @@
     <color name="red">#FF0000</color>
     <color name="player">#3099B3</color>
     <color name="enemy">#B3304A</color>
+    <color name="border">#BABABA</color>
+    <color name="health">#1CAD51</color>
 </resources>
