@@ -1,6 +1,7 @@
 package com.example.mygame;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -15,6 +16,14 @@ import com.example.mygame.entityObjects.Enemy;
 import com.example.mygame.entityObjects.EntityCircle;
 import com.example.mygame.entityObjects.Player;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +36,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     //private final Enemy enemy;
     private List<Enemy> enemies = new ArrayList<>();
     private StatusText statusText;
+    private String secondsRunning;
+    private int previousBest;
 
     public Game(Context context) {
         super(context);
@@ -42,6 +53,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         //enemy = new Enemy(getContext(), player, 500, 500, 30);
 
         statusText = new StatusText("DEAD", ContextCompat.getColor(context, R.color.red), 1100, 200);
+        this.previousBest = Double.valueOf(readFromStorage("score.txt")).intValue();
+
         setFocusable(true);
     }
 
@@ -89,7 +102,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void draw(Canvas canvas) {
         super.draw(canvas);
         drawFPS(canvas);
-        //drawUPS(canvas);
+        drawSeconds(canvas);
+        drawBestTime(canvas);
 
         joystick.draw(canvas);
         player.draw(canvas);
@@ -100,6 +114,15 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         if(player.health <= 0){
             statusText.draw(canvas);
+
+            Double s = Double.parseDouble(this.secondsRunning);
+
+            if( this.previousBest < s.intValue()){
+                writeToStorage("score.txt", this.secondsRunning);
+                this.previousBest = s.intValue();
+                drawBestTime(canvas);
+            }
+
         }
     }
 
@@ -123,9 +146,30 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         canvas.drawText("FPS" + averageFPS, 100, 60, paint);
     }
 
+    public void drawSeconds(Canvas canvas) {
+
+        Paint paint = new Paint();
+        int color = ContextCompat.getColor(getContext(), R.color.white);
+        paint.setColor(color);
+        paint.setTextSize(50);
+        canvas.drawText("Time: " + secondsRunning, MainActivity.getScreenWidth()-507, 170, paint);
+    }
+
+    public void drawBestTime(Canvas canvas){
+
+        String bestTime = String.valueOf(this.previousBest);
+        Paint paint = new Paint();
+        int color = ContextCompat.getColor(getContext(), R.color.yellow);
+        paint.setColor(color);
+        paint.setTextSize(50);
+        canvas.drawText("Highscore: " + bestTime, MainActivity.getScreenWidth()-507, 115, paint);
+    }
+
     public void update() {
 
         if(player.health > 0) {
+
+            this.secondsRunning = Double.toString(gameLoop.getSecondsRunning());
 
             joystick.update();
             player.update();
@@ -147,6 +191,49 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                     player.health--;
                 }
             }
+
+        }
+    }
+
+    public void writeToStorage(String filename, String text){
+
+
+        try (FileOutputStream fos = getContext().openFileOutput(filename, Context.MODE_PRIVATE)) {
+            fos.write(text.getBytes());
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public String readFromStorage(String filename){
+
+        try {
+            FileInputStream inputStream = getContext().openFileInput(filename);
+            InputStreamReader reader = new InputStreamReader(inputStream);
+
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            StringBuffer stringBuffer = new StringBuffer();
+
+            String text;
+
+            while((text = bufferedReader.readLine()) != null){
+                stringBuffer.append(text);
+            }
+
+            return stringBuffer.toString();
+
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return "0";
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "0";
         }
     }
 

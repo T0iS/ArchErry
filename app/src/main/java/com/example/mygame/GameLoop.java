@@ -3,6 +3,8 @@ package com.example.mygame;
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
+import java.math.BigDecimal;
+
 public class GameLoop extends Thread {
 
     private boolean isRunning = false;
@@ -12,10 +14,12 @@ public class GameLoop extends Thread {
     private double averageFPS;
     public static final double MAX_UPS = 60.0;
     private static final double UPS_PERIOD = 1E-3/MAX_UPS;
+    private int secondsRunning;
 
     public GameLoop(Game game, SurfaceHolder surfaceHolder) {
         this.surfaceHolder = surfaceHolder;
         this.game = game;
+        this.secondsRunning = 0;
     }
 
     public double getAverageUPS() {
@@ -24,6 +28,10 @@ public class GameLoop extends Thread {
 
     public double getAverageFPS() {
         return averageFPS;
+    }
+
+    public double getSecondsRunning() {
+        return secondsRunning;
     }
 
     public void startLoop() {
@@ -98,13 +106,21 @@ public class GameLoop extends Thread {
 */
 
             elapsedTime = System.currentTimeMillis() - startTime;
+            secondsRunning += elapsedTime/1000;
             if(elapsedTime >= 1000){
                 averageUPS = updateCount / (1E-3 * elapsedTime);
                 averageFPS = frameCount / (1E-3 * elapsedTime);
                 updateCount = 0;
                 frameCount = 0;
                 startTime = System.currentTimeMillis();
+
             }
         }
+    }
+
+    public static float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
     }
 }
