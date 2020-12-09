@@ -1,6 +1,7 @@
 package com.example.mygame;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -8,6 +9,8 @@ import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -39,6 +42,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private String secondsRunning;
     private int previousBest;
 
+    private boolean deathCaught = false;
+
+    private Sound sound;
+
     public Game(Context context) {
         super(context);
 
@@ -54,6 +61,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         statusText = new StatusText("DEAD", ContextCompat.getColor(context, R.color.red), 1100, 200);
         this.previousBest = Double.valueOf(readFromStorage("score.txt")).intValue();
+
+        sound = new Sound(getContext());
 
         setFocusable(true);
     }
@@ -115,12 +124,16 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         if(player.health <= 0){
             statusText.draw(canvas);
 
-            Double s = Double.parseDouble(this.secondsRunning);
+            if(!deathCaught) {
+                deathCaught = true;
+                sound.playDeadSound();
+                Double s = Double.parseDouble(this.secondsRunning);
 
-            if( this.previousBest < s.intValue()){
-                writeToStorage("score.txt", this.secondsRunning);
-                this.previousBest = s.intValue();
-                drawBestTime(canvas);
+                if (this.previousBest < s.intValue()) {
+                    writeToStorage("score.txt", this.secondsRunning);
+                    this.previousBest = s.intValue();
+                    drawBestTime(canvas);
+                }
             }
 
         }
@@ -189,6 +202,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 if (EntityCircle.collides(enemyIterator.next(), player)) {
                     enemyIterator.remove();
                     player.health--;
+                    sound.playHitSound();
                 }
             }
 
@@ -236,8 +250,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             return "0";
         }
     }
-
-
 
 
 }
